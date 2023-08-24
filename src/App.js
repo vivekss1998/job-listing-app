@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './JobListings.css';
+import './App.css';
 import { Card } from 'primereact/card';
 import { Button } from 'primereact/button';
 import 'primereact/resources/themes/saga-blue/theme.css';
@@ -9,6 +10,9 @@ import 'primeicons/primeicons.css';
 const JobListings = () => {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [expandedJobIds, setExpandedJobIds] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+
 
   useEffect(() => {
     fetch('https://demo.jobsoid.com/api/v1/jobs')
@@ -40,7 +44,6 @@ const JobListings = () => {
     return jobOverview ? jobOverview.innerHTML : '';
   };
 
-  const [expandedJobIds, setExpandedJobIds] = useState([]);
 
   const toggleJobExpansion = (jobId) => {
     if (expandedJobIds.includes(jobId)) {
@@ -49,7 +52,10 @@ const JobListings = () => {
       setExpandedJobIds([...expandedJobIds, jobId]);
     }
   };
-
+  const filteredJobs = jobs.filter((job) =>
+    job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    job.company.toLowerCase().includes(searchQuery.toLowerCase())
+  );
   return (
     <div>
       <div className="p-bubble p-bubble-top gradient-bg">
@@ -62,11 +68,30 @@ const JobListings = () => {
       </nav>
       <div className="container">
       <h2>Job Listings</h2>
+      {/* Search input field with search icon and clear button */}
+      <div className="search-bar">
+      
+            <input
+              type="text"
+              placeholder="Search jobs..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            {searchQuery && (
+              <span className="clear-icon" onClick={() => setSearchQuery('')}>
+                <i className="pi pi-times" />
+              </span>
+            )}
+          </div>
+
+
       <div className="p-grid p-col-gap">
         {loading ? (
           <p>Loading...</p>
+        ) : filteredJobs.length === 0 ? (
+          <p>No records found.</p>
         ) : (
-          jobs.map(job => (
+          filteredJobs.map(job => (
             <div key={job.id} className="p-col-12 p-md-6 p-lg-4">
               <Card title={job.title} className="p-shadow-3">
                 <p><i className="pi pi-briefcase" /> <strong>Company:</strong> {job.company}</p>

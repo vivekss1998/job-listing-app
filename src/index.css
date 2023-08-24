@@ -16,3 +16,27 @@ code {
   background: linear-gradient(to bottom, #83c0df, #75f094); /* Paper Grey colors */
 }
 
+.search-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon,
+.clear-icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
+.search-icon {
+  left: 0;
+}
+
+.clear-icon {
+  right: 0;
+}
+
+
