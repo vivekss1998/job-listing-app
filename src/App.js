@@ -69,10 +69,10 @@ const JobListings = () => {
           jobs.map(job => (
             <div key={job.id} className="p-col-12 p-md-6 p-lg-4">
               <Card title={job.title} className="p-shadow-3">
-                <p><strong>Company:</strong> {job.company}</p>
-                <p><strong>Positions:</strong> {job.positions}</p>
-                <p><strong>Location:</strong> {job.location.city}, {job.location.state}, {job.location.country}</p>
-                <p><strong>Posted Date:</strong> {new Date(job.postedDate).toLocaleDateString()}</p>
+                <p><i className="pi pi-briefcase" /> <strong>Company:</strong> {job.company}</p>
+                <p><i className="pi pi-users" /> <strong>Positions:</strong> {job.positions}</p>
+                <p><i className="pi pi-map-marker" /> <strong>Location:</strong> {job.location.city}, {job.location.state}, {job.location.country}</p>
+                <p><i className="pi pi-calendar" /> <strong>Posted Date:</strong> {new Date(job.postedDate).toLocaleDateString()}</p>
                 {/* Display truncated job overview */}
                 <div
                   className={expandedJobIds.includes(job.id) ? 'expanded' : 'collapsed'}
