@@ -3,6 +3,7 @@ import './JobListings.css';
 import './App.css';
 import { Card } from 'primereact/card';
 import { Button } from 'primereact/button';
+import { Dropdown } from 'primereact/dropdown'; // Import Dropdown component
 import 'primereact/resources/themes/saga-blue/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
@@ -12,18 +13,19 @@ const JobListings = () => {
   const [loading, setLoading] = useState(true);
   const [expandedJobIds, setExpandedJobIds] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedLocation, setSelectedLocation] = useState(null); // Selected location state
+  const [locations, setLocations] = useState([]); // Location data state
+  const [departments, setDepartments] = useState([]); // Department data state
+  const [selectedDepartment, setSelectedDepartment] = useState(null); // Selected department state
+  const [selectedFunction, setSelectedFunction] = useState(null); // Selected function state
+  const [functions, setFunctions] = useState([]); // Function data state
 
 
   useEffect(() => {
     fetch('https://demo.jobsoid.com/api/v1/jobs')
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
+      .then(response => response.json())
       .then(data => {
-        if (data && Array.isArray(data)) {
+        if (Array.isArray(data)) {
           setJobs(data);
         }
         setLoading(false);
@@ -32,9 +34,65 @@ const JobListings = () => {
         console.error('Error fetching job listings:', error);
         setLoading(false);
       });
+      
+    fetch('https://demo.jobsoid.com/api/v1/locations')
+      .then(response => response.json())
+      .then(data => {
+        setLocations(data);
+      })
+      .catch(error => {
+        console.error('Error fetching locations:', error);
+      });
+
+      fetch('https://demo.jobsoid.com/api/v1/departments')
+      .then(response => response.json())
+      .then(data => {
+        setDepartments(data);
+      })
+      .catch(error => {
+        console.error('Error fetching departments:', error);
+      });
+
+      fetch('https://demo.jobsoid.com/api/v1/functions')
+      .then(response => response.json())
+      .then(data => {
+        setFunctions(data);
+      })
+      .catch(error => {
+        console.error('Error fetching functions:', error);
+      });
+
+    const savedSearchQuery = localStorage.getItem('searchQuery');
+    const savedLocation = JSON.parse(localStorage.getItem('selectedLocation'));
+    const savedDepartment = JSON.parse(localStorage.getItem('selectedDepartment'));
+    const savedFunction = JSON.parse(localStorage.getItem('selectedFunction'));
+
+    // Set data to state
+    setSearchQuery(savedSearchQuery || '');
+    setSelectedLocation(savedLocation || null);
+    setSelectedDepartment(savedDepartment || null);
+    setSelectedFunction(savedFunction || null);
   }, []);
 
-  
+  useEffect(() => {
+    // ... Existing fetch calls ...
+
+    // Store data in localStorage whenever it changes
+    localStorage.setItem('searchQuery', searchQuery);
+    localStorage.setItem('selectedLocation', JSON.stringify(selectedLocation));
+    localStorage.setItem('selectedDepartment', JSON.stringify(selectedDepartment));
+    localStorage.setItem('selectedFunction', JSON.stringify(selectedFunction));
+
+    // ... Update filteredJobs based on search and dropdown selections ...
+  }, [searchQuery, selectedLocation, selectedDepartment, selectedFunction]);
+
+  const handleFunctionChange = (e) => {
+    setSelectedFunction(e.value);
+  };
+
+  const handleDepartmentChange = (e) => {
+    setSelectedDepartment(e.value);
+  };
 
   // Function to extract content within the 'job-overview' div
   const extractJobOverview = (htmlString) => {
@@ -44,7 +102,6 @@ const JobListings = () => {
     return jobOverview ? jobOverview.innerHTML : '';
   };
 
-
   const toggleJobExpansion = (jobId) => {
     if (expandedJobIds.includes(jobId)) {
       setExpandedJobIds(expandedJobIds.filter(id => id !== jobId));
@@ -52,9 +109,17 @@ const JobListings = () => {
       setExpandedJobIds([...expandedJobIds, jobId]);
     }
   };
+  const handleLocationChange = (e) => {
+    setSelectedLocation(e.value);
+  };
+  const handleClearLocation = () => {
+    setSelectedLocation(null);
+  };
   const filteredJobs = jobs.filter((job) =>
-    job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    job.company.toLowerCase().includes(searchQuery.toLowerCase())
+    job.title.toLowerCase().includes(searchQuery.toLowerCase()) &&
+    (!selectedLocation || job.location.state === selectedLocation.title) &&
+    (!selectedDepartment || job.department === selectedDepartment.title) &&
+    (!selectedFunction || job.function === selectedFunction.title)
   );
   return (
     <div>
@@ -73,7 +138,7 @@ const JobListings = () => {
       
             <input
               type="text"
-              placeholder="Search jobs..."
+              placeholder="Search Jobs Opening ..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -83,8 +148,65 @@ const JobListings = () => {
               </span>
             )}
           </div>
-
-
+          <div className="dropdown-container">
+              <Dropdown
+                value={selectedLocation}
+                options={locations}
+                optionLabel="title"
+                placeholder="Select a location , country , state "
+                onChange={handleLocationChange}
+                className="location-dropdown"
+                style={{ width: '96%' }} // Set the width 
+              />
+              {selectedLocation && (
+                <Button
+                  className="p-button-secondary clear-button"
+                  icon="pi pi-times"
+                  onClick={handleClearLocation}
+                  style={{ height: '40px' }}
+                />
+              )}
+           </div>
+          {/* Department Dropdown */}
+            <div className="dropdown-container">
+              <Dropdown
+                value={selectedDepartment}
+                options={departments}
+                optionLabel="title"
+                placeholder="Select a department"
+                onChange={handleDepartmentChange}
+                style={{ width: '96%' }} // Set the width 
+              />
+              {selectedDepartment && (
+                <Button
+                  className="p-button-secondary clear-button"
+                  icon="pi pi-times"
+                  onClick={() => setSelectedDepartment(null)}
+                  style={{ height: '40px' }}
+                />
+              )}
+            </div>
+            {/* Function Dropdown */}
+            <div className="dropdown-container">
+              <Dropdown
+                value={selectedFunction}
+                options={functions}
+                optionLabel="title"
+                placeholder="Select a function"
+                onChange={handleFunctionChange}
+                style={{ width: '96%' }} // Set the width
+              />
+              {selectedFunction && (
+                <Button
+                  className="p-button-secondary clear-button"
+                  icon="pi pi-times"
+                  onClick={() => setSelectedFunction(null)}
+                  style={{ height: '40px' }} // Set the width
+                />
+              )}
+            </div>
+     {/* Apply some space between the dropdowns and the cards */}
+    <div className="card-container">
       <div className="p-grid p-col-gap">
         {loading ? (
           <p>Loading...</p>
@@ -135,6 +257,7 @@ const JobListings = () => {
           ))
         )}
       </div>
+    </div>
     </div>
     </div>
     </div>
