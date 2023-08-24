@@ -11,3 +11,8 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.gradient-bg {
+  background: linear-gradient(to bottom, #83c0df, #75f094); /* Paper Grey colors */
+}
+

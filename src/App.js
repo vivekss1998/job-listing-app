@@ -30,6 +30,8 @@ const JobListings = () => {
       });
   }, []);
 
+  
+
   // Function to extract content within the 'job-overview' div
   const extractJobOverview = (htmlString) => {
     const parser = new DOMParser();
@@ -50,6 +52,15 @@ const JobListings = () => {
 
   return (
     <div>
+      <div className="p-bubble p-bubble-top gradient-bg">
+
+      <nav className="purple lighten-1"> {/* Add the purple lighten-1 class */}
+        <div className="nav-wrapper">
+          <i className="material-icons left"></i> {/* Work icon */}
+          <a href="/" className="brand-logo">Vivek salgaonkar</a>
+        </div>
+      </nav>
+      <div className="container">
       <h2>Job Listings</h2>
       <div className="p-grid p-col-gap">
         {loading ? (
@@ -57,10 +68,11 @@ const JobListings = () => {
         ) : (
           jobs.map(job => (
             <div key={job.id} className="p-col-12 p-md-6 p-lg-4">
-              <Card title={job.title}>
+              <Card title={job.title} className="p-shadow-3">
                 <p><strong>Company:</strong> {job.company}</p>
-                <p>Location: {job.location.city}, {job.location.state}, {job.location.country}</p>
-                <p>Posted Date: {new Date(job.postedDate).toLocaleDateString()}</p>
+                <p><strong>Positions:</strong> {job.positions}</p>
+                <p><strong>Location:</strong> {job.location.city}, {job.location.state}, {job.location.country}</p>
+                <p><strong>Posted Date:</strong> {new Date(job.postedDate).toLocaleDateString()}</p>
                 {/* Display truncated job overview */}
                 <div
                   className={expandedJobIds.includes(job.id) ? 'expanded' : 'collapsed'}
@@ -82,22 +94,24 @@ const JobListings = () => {
                 {/* Display buttons next to each other with a little space */}
                 <div style={{ display: 'flex' }}>
                   <Button
-                    label="Apply"
-                    className="p-button-success shadow-button"
-                    style={{ marginRight: '0.5rem' }}
-                    onClick={() => window.open(job.applyUrl, '_blank')}
-                  />
-                  <Button
-                    label="View"
-                    className="p-button-secondary shadow-button"
-                    onClick={() => window.open(job.hostedUrl, '_blank')}
-                  />
+                      label={<><i className="pi pi-check" /> Apply</>}
+                      className="p-button-success shadow-button"
+                      style={{ marginRight: '0.5rem' }}
+                      onClick={() => window.open(job.applyUrl, '_blank')}
+                    />
+                    <Button
+                      label={<><i className="pi pi-eye" /> View</>}
+                      className="p-button-secondary shadow-button"
+                      onClick={() => window.open(job.hostedUrl, '_blank')}
+                    />
                 </div>
               </Card>
             </div>
           ))
         )}
       </div>
+    </div>
+    </div>
     </div>
   );
 };
