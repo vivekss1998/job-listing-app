@@ -91,4 +91,24 @@ body {
   }
   
 
+  /* Styles for the ads section */
+.ads-section {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 5px;
+    margin-top: 20px;
+  }
+  
+  .ad-job {
+    margin-bottom: 15px;
+  }
+  
+  .ad-job-title {
+    font-weight: bold;
+    text-decoration: none;
+  }
+  
+  .ad-job-location {
+    color: #777;
+  }
   

@@ -5,6 +5,7 @@ import './ViewJobDetails.css';
 const ViewJobDetails = () => {
   const { jobId } = useParams();
   const [jobDetails, setJobDetails] = useState(null);
+  const [otherJobs, setOtherJobs] = useState([]);
 
   useEffect(() => {
     fetch(`https://demo.jobsoid.com/api/v1/jobs/${jobId}`)
@@ -15,7 +16,16 @@ const ViewJobDetails = () => {
       .catch(error => {
         console.error('Error fetching job details:', error);
       });
-  }, [jobId]);
+     // Fetch other jobs for ads
+     fetch('https://demo.jobsoid.com/api/v1/jobs')
+     .then(response => response.json())
+     .then(data => {
+       setOtherJobs(data);
+     })
+     .catch(error => {
+       console.error('Error fetching other jobs:', error);
+     });
+ }, [jobId]);
 
   if (!jobDetails) {
     return <p>Loading...</p>;
@@ -63,6 +73,25 @@ const ViewJobDetails = () => {
               </a>
             </div>
 
+                  {/* Ads Section */}
+      <div className="ads-section">
+        <h3>Other Job Openings</h3>
+        {otherJobs.map(adJob => (
+          <div key={adJob.id} className="ad-job">
+            <a href={`/view/${adJob.id}`} className="ad-job-title">
+              {adJob.title}
+            </a>
+            <p className="ad-job-location">
+            <i className="pi pi-map-marker location-icon" />
+              {adJob.location && adJob.location.city},{' '}
+              {adJob.location && adJob.location.state}
+            </p>
+          </div>
+        ))}
+      </div>
+    
+
+
             {/* Social Media Share */}
             <div className="share-section align justify-content-between">
               <h3>Share this job:</h3>
@@ -82,6 +111,7 @@ const ViewJobDetails = () => {
         </div>
       </div>
     </div>
+    
   );
 };
 
