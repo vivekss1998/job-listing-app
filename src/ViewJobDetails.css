@@ -1,6 +1,12 @@
 /* General Styles */
+/* ViewJobDetails.css */
+
+/* Import Nunito Sans font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700&display=swap');
+
+/* Apply Nunito Sans font to body */
 body {
-    font-family: Arial, sans-serif;
+  font-family: 'Nunito Sans', sans-serif;
     margin: 0;
     padding: 0;
   }
@@ -77,4 +83,12 @@ body {
   a:hover {
     background-color: #4ca940;
   }
+  
+  /* Add padding to each social icon */
+.social-icons a {
+    margin-right: 10px; /* Adjust the spacing as needed */
+    text-decoration: none;
+  }
+  
+
   
